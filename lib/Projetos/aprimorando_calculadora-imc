@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Calculadora de IMC'),
+        ),
+        body: IMCCalculator(),
+      ),
+    );
+  }
+}
+
+class IMCCalculator extends StatefulWidget {
+  @override
+  _IMCCalculatorState createState() => _IMCCalculatorState();
+}
+
+class _IMCCalculatorState extends State<IMCCalculator> {
+  final List<IMC> imcList = [];
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController pesoController = TextEditingController();
+  final TextEditingController alturaController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: nomeController,
+            decoration: InputDecoration(labelText: 'Nome'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: pesoController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: 'Peso (kg)'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: alturaController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: 'Altura (m)'),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            calcularIMC();
+          },
+          child: Text('Calcular IMC'),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: imcList.length,
+            itemBuilder: (context, index) {
+              final imc = imcList[index];
+              return ListTile(
+                title: Text('Nome: ${imc.nome}'),
+                subtitle: Text('IMC: ${imc.calcularIMC().toStringAsFixed(2)}'),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void calcularIMC() {
+    final nome = nomeController.text;
+    final peso = double.tryParse(pesoController.text) ?? 0;
+    final altura = double.tryParse(alturaController.text) ?? 0;
+
+    if (nome.isNotEmpty && peso > 0 && altura > 0) {
+      final imc = IMC(nome, peso, altura);
+      imcList.add(imc);
+
+      setState(() {
+        nomeController.clear();
+        pesoController.clear();
+        alturaController.clear();
+      });
+    }
+  }
+}
+
+class IMC {
+  final String nome;
+  final double peso;
+  final double altura;
+
+  IMC(this.nome, this.peso, this.altura);
+
+  double calcularIMC() {
+    return peso / (altura * altura);
+  }
+}
