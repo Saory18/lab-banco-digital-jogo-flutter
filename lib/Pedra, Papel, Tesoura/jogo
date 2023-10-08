@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Pedra, Papel e Tesoura'),
+        ),
+        body: GameScreen(),
+      ),
+    );
+  }
+}
+
+class GameScreen extends StatefulWidget {
+  @override
+  _GameScreenState createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  final List<String> choices = ['Pedra', 'Papel', 'Tesoura'];
+  String playerChoice;
+  String computerChoice;
+  String result = '';
+
+  void playGame(String choice) {
+    setState(() {
+      playerChoice = choice;
+      final Random rand = Random();
+      computerChoice = choices[rand.nextInt(3)];
+
+      if (playerChoice == computerChoice) {
+        result = 'Empate!';
+      } else if ((playerChoice == 'Pedra' && computerChoice == 'Tesoura') ||
+          (playerChoice == 'Papel' && computerChoice == 'Pedra') ||
+          (playerChoice == 'Tesoura' && computerChoice == 'Papel')) {
+        result = 'Você ganhou!';
+      } else {
+        result = 'Você perdeu!';
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text('Escolha do jogador: $playerChoice', style: TextStyle(fontSize: 20)),
+        Text('Escolha do computador: $computerChoice', style: TextStyle(fontSize: 20)),
+        Text('Resultado: $result', style: TextStyle(fontSize: 20)),
+        SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: choices.map((choice) {
+            return ElevatedButton(
+              onPressed: () {
+                playGame(choice);
+              },
+              child: Text(choice),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
